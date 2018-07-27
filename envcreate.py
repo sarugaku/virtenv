@@ -53,14 +53,12 @@ def create_venv(env_dir, system_site_packages, prompt):
         prompt=prompt,  # Supported by custom builder.
         system_site_packages=system_site_packages,
         symlinks=(os.name != 'nt'),  # Copied from venv logic.
-        with_pip=True,  # We only enter here for Python 3.4 so this is fine.
+        with_pip=True,  # We only enter here for Python 3.4+ so this is fine.
     )
     builder.create(env_dir)
 
 
 def create_virtualenv(virtualenv_py, env_dir, system, prompt):
-    if not virtualenv_py:
-        raise EnvironmentError('virtualenv.py not available')
     cmd = [sys.executable, virtualenv_py, str(env_dir)]
     if system:
         cmd.append('--system-site-packages')

@@ -2,7 +2,6 @@ from __future__ import print_function
 
 __all__ = ['create']
 
-import argparse
 import os
 import subprocess
 import sys
@@ -125,6 +124,7 @@ def create(python, env_dir, system, prompt, virtualenv_py=None):
 
 def _main(args=None):
     # Handles the delegation from _create_with_python.
+    import argparse
     parser = argparse.ArgumentParser()
     parser.add_argument('env_dir')
     parser.add_argument('--system', default=False, action='store_true')

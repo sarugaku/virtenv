@@ -1,6 +1,6 @@
-==========================
-create-virtual-environment
-==========================
+==========
+Env Create
+==========
 
 A simple script to encapsulate venv and virtualenv creation in one. venv is
 always used if possible; if it's not, virtualenv will be used (if specified)

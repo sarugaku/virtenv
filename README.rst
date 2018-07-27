@@ -16,8 +16,10 @@ Python API
 
     create(python, env_dir, virtualenv_py, system, prompt)
 
-* ``python`` should be an absolute path pointing to a Python executable, or
-  ``None`` to specify the current Python interpreter.
+* ``python`` should be an absolute path pointing to a Python executable. If
+  this is not ``None``, and does not match ``sys.executable``, that interpreter
+  is launched as a subprocess to run this script. Otherwise, the creation is
+  done in-process (subprocesses may still be run in steps during the creation).
 * ``env_dir`` points to the directory to create the new virtual environment.
 * ``system`` specifies whether system site packages will be available for
   the created virtual environment.

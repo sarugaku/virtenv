@@ -20,16 +20,16 @@ else:
         def __init__(self, **kwargs):
             if sys.version_info < (3, 6):
                 self.prompt = kwargs.pop('prompt', None)
-            super().__init__(**kwargs)
+            super(_EnvBuilder, self).__init__(**kwargs)
 
-        def ensure_directories(self, *args, **kwargs):
-            context = super().ensure_directories(*args, **kwargs)
+        def ensure_directories(self, env_dir):
+            context = super(_EnvBuilder, self).ensure_directories(env_dir)
             if sys.version_info < (3, 6) and self.prompt is not None:
                 context.prompt = self.prompt
             return context
 
         def setup_python(self, context):
-            super().setup_python(context)
+            super(_EnvBuilder, self).setup_python(context)
             print('New Python executable in', context.env_exe)
 
         def post_setup(self, context):

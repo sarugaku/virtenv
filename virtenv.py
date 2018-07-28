@@ -1,6 +1,6 @@
 from __future__ import print_function
 
-__all__ = ['create']
+__all__ = ['create', 'VirtualenvNotFound']
 
 import os
 import subprocess
@@ -135,15 +135,19 @@ def create(python, env_dir, system, prompt, virtualenv_py=None):
         _create_with_python(python, env_dir, system, prompt, virtualenv_py)
 
 
-def _main(args=None):
-    # Handles the delegation from _create_with_python.
+def _get_parser():
     import argparse
     parser = argparse.ArgumentParser()
     parser.add_argument('env_dir')
     parser.add_argument('--system', default=False, action='store_true')
     parser.add_argument('--virtualenv.py', dest='script', default=None)
     parser.add_argument('--prompt', default=None)
-    opts = parser.parse_args(args)
+    return parser
+
+
+def _main(args=None):
+    # Handles the delegation from _create_with_python.
+    opts = _get_parser().parse_args(args)
     try:
         _create_with_this(opts.env_dir, opts.system, opts.prompt, opts.script)
     except VirtualenvNotFound:

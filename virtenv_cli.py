@@ -13,15 +13,15 @@ def which(name):
     for p in os.environ['PATH'].split(os.pathsep):
         exe = os.path.join(p, name)
         if is_executable(exe):
-            return exe
+            return os.path.abspath(exe)
         for ext in [''] + os.environ.get('PATHEXT', '').split(os.pathsep):
             exe = '{}{}'.format(exe, ext.lower())
             if is_executable(exe):
-                return exe
+                return os.path.abspath(exe)
 
 
 def parse_python(value):
-    if os.path.abspath(value):
+    if os.path.isabs(value):
         return str(value)
     full = which(value)
     if full:
@@ -41,7 +41,7 @@ def main(args=None):
     parser.add_argument('--prompt', default=None)
     opts = parser.parse_args(args)
     try:
-        create(opts.python, opts.env_dir, opts.system, opts.script)
+        create(opts.python, opts.env_dir, opts.system, opts.prompt)
     except VirtualenvNotFound:
         print('virtualenv not available')
         sys.exit(1)

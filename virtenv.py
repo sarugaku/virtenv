@@ -118,9 +118,11 @@ def _create_with_this(env_dir, system, prompt, virtualenv_py):
 
 def _create_with_python(python, env_dir, system, prompt, virtualenv_py):
     # Delegate everything into a subprocess. Trick learned from virtualenv.
-    cmd = [python, _get_script(), str(env_dir), '--prompt', prompt]
+    cmd = [python, _get_script(), str(env_dir)]
     if system:
         cmd.append('--system')
+    if prompt:
+        cmd.extend(['--prompt', prompt])
     if virtualenv_py:
         cmd.extend(['--virtualenv.py', virtualenv_py])
     subprocess.check_call(cmd)

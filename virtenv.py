@@ -48,7 +48,7 @@ else:
                 print()
 
 
-def _get_script(module):
+def _get_script(module=None):
     if module:
         script = os.path.abspath(module.__file__)
     else:

@@ -48,6 +48,16 @@ else:
                 print()
 
 
+def _get_script(module):
+    if module:
+        script = os.path.abspath(module.__file__)
+    else:
+        script = os.path.abspath(__file__)
+    if script.endswith('.pyc'):
+        script = script[:1]
+    return script
+
+
 def create_venv(env_dir, system_site_packages, prompt):
     builder = _EnvBuilder(
         prompt=prompt,  # Supported by custom builder.
@@ -58,7 +68,18 @@ def create_venv(env_dir, system_site_packages, prompt):
     builder.create(env_dir)
 
 
+class VirtualenvNotFound(EnvironmentError):
+    pass
+
+
 def create_virtualenv(virtualenv_py, env_dir, system, prompt):
+    if not virtualenv_py:
+        try:
+            import virtualenv
+        except ImportError:
+            raise VirtualenvNotFound
+        else:
+            virtualenv_py = _get_script(virtualenv)
     cmd = [sys.executable, virtualenv_py, str(env_dir)]
     if system:
         cmd.append('--system-site-packages')
@@ -91,24 +112,18 @@ def _is_venv_usable():
 def _create_with_this(env_dir, system, prompt, virtualenv_py):
     if _is_venv_usable():
         create_venv(env_dir, system, prompt)
-    elif virtualenv_py:
-        create_virtualenv(virtualenv_py, env_dir, system, prompt)
     else:
-        print('virtualenv not available')
-        sys.exit(1)
+        create_virtualenv(virtualenv_py, env_dir, system, prompt)
 
 
 def _create_with_python(python, env_dir, system, prompt, virtualenv_py):
     # Delegate everything into a subprocess. Trick learned from virtualenv.
-    this_file = os.path.abspath(__file__)
-    if this_file.endswith('.pyc'):
-        this_file = this_file[:1]
-    cmd = [python, this_file, str(env_dir), '--prompt', prompt]
+    cmd = [python, _get_script(), str(env_dir), '--prompt', prompt]
     if system:
         cmd.append('--system')
     if virtualenv_py:
         cmd.extend(['--virtualenv.py', virtualenv_py])
-    sys.exit(subprocess.call(cmd))
+    subprocess.check_call(cmd)
 
 
 def create(python, env_dir, system, prompt, virtualenv_py=None):
@@ -129,7 +144,11 @@ def _main(args=None):
     parser.add_argument('--virtualenv.py', dest='script', default=None)
     parser.add_argument('--prompt', default=None)
     opts = parser.parse_args(args)
-    _create_with_this(opts.env_dir, opts.system, opts.prompt, opts.script)
+    try:
+        _create_with_this(opts.env_dir, opts.system, opts.prompt, opts.script)
+    except VirtualenvNotFound:
+        print('virtualenv not available')
+        sys.exit(1)
 
 
 if __name__ == '__main__':

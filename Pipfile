@@ -1,0 +1,5 @@
+[packages]
+virtenv = { path = '.', editable = true }
+
+[dev-packages]
+twine = '*'

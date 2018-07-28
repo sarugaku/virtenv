@@ -1,7 +1,8 @@
+import argparse
 import os
 import sys
 
-from virtenv import VirtualenvNotFound, create, _get_parser
+from virtenv import VirtualenvNotFound, create
 
 
 def is_executable(path):
@@ -33,8 +34,11 @@ def parse_python(value):
 
 
 def main(args=None):
-    parser = _get_parser()
+    parser = argparse.ArgumentParser()
+    parser.add_argument('env_dir')
     parser.add_argument('--python', required=True, type=parse_python)
+    parser.add_argument('--system', default=False, action='store_true')
+    parser.add_argument('--prompt', default=None)
     opts = parser.parse_args(args)
     try:
         create(opts.python, opts.env_dir, opts.system, opts.script)

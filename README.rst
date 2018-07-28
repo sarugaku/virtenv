@@ -35,13 +35,12 @@ Command line API
 
 ::
 
-    virtenv.py env_dir
-        [--system]
-        [--virtualenv.py VIRTUALENV_PY]
-        [--prompt PROMPT]
+    virtenv env_dir --python PYTHON [--system] [--prompt PROMPT]
 
-The meanings of arguments are similar to the Python API. Note that the
-``python`` argument is not available here; this always uses ``sys.executable``.
+Meanings of arguments are similar to the Python API.
+
+The ``python`` argument is required, and can be a version, such as ``3.7``.
+A suitable Python executable will be looked up automatically if possible.
 
 
 When is venv used

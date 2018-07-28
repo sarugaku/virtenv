@@ -56,6 +56,8 @@ for the following scenarios:
   don't want that.
 * When ``sys.real_prefix`` is set. This usually means the target Python is
   managed by a virtualenv, and venv is known to have problems working in this
-  situation. See discussion in `bpo-30811`_ for more information.
+  situation. See discussion in `bpo-30811`_ and `pypa/virtualenv#1095`_ for
+  more information.
 
 .. _`bpo-30811`: https://bugs.python.org/issue30811
+.. _`pypa/virtualenv#1095`: https://github.com/pypa/virtualenv/issues/1095

@@ -33,12 +33,33 @@ def parse_python(value):
     raise ValueError('invalid Python specification')
 
 
+def ensure_directory(value):
+    if os.path.exists(value):
+        raise ValueError('path exists')
+    return value
+
+
 def main(args=None):
-    parser = argparse.ArgumentParser()
-    parser.add_argument('env_dir')
-    parser.add_argument('--python', required=True, type=parse_python)
-    parser.add_argument('--system', default=False, action='store_true')
-    parser.add_argument('--prompt', default=None)
+    parser = argparse.ArgumentParser(
+        prog='virtenv',
+        description='Create a virtual environment with venv or virtualenv.',
+    )
+    parser.add_argument(
+        'env_dir', type=ensure_directory,
+        help='Directory to create the virtual environment in.',
+    )
+    parser.add_argument(
+        '--python', required=True, type=parse_python,
+        help='Python to use (a version, command, or path to the executable).',
+    )
+    parser.add_argument(
+        '--system-site-packages', default=False, action='store_true',
+        help='Give the environment access to the system site-packages.',
+    )
+    parser.add_argument(
+        '--prompt', default=None,
+        help='Provides an alternative prompt prefix for this environment.',
+    )
     opts = parser.parse_args(args)
     try:
         create(opts.python, opts.env_dir, opts.system, opts.prompt)

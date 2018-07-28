@@ -1,6 +1,6 @@
-==========
-Env Create
-==========
+=======
+VirtEnv
+=======
 
 A simple script to encapsulate venv and virtualenv creation in one. venv is
 always used if possible; if it's not, virtualenv will be used (if specified)
@@ -35,7 +35,7 @@ Command line API
 
 ::
 
-    envcreate.py env_dir
+    virtenv.py env_dir
         [--system]
         [--virtualenv.py VIRTUALENV_PY]
         [--prompt PROMPT]

@@ -20,23 +20,38 @@ def which(name):
                 return os.path.abspath(exe)
 
 
-def parse_python(value):
-    if os.path.isabs(value):
-        return str(value)
-    full = which(value)
-    if full:
-        return full
-    import pythonfinder
-    python = pythonfinder.Finder().find_python_version(value)
-    if python:
-        return str(python.path)
-    raise ValueError('invalid Python specification')
+class Python(object):
+    """Custom type to parse Python path.
+    """
+    def __repr__(self):
+        return 'Python specification'
+
+    def __call__(self, value):
+        if os.path.isabs(value):
+            return str(value)
+        full = which(value)
+        if full:
+            return full
+        import pythonfinder
+        python = pythonfinder.Finder().find_python_version(value)
+        if python:
+            return str(python.path)
+        raise ValueError(value)
 
 
-def ensure_directory(value):
-    if os.path.exists(value):
-        raise ValueError('path exists')
-    return value
+class NonExistPath(object):
+    """Custom type to ensure the value does not exist.
+    """
+    def __init__(self, parser):
+        self.parser = parser
+
+    def __repr__(self):
+        return 'path'
+
+    def __call__(self, value):
+        if os.path.exists(value):
+            self.parser.error('path exists at {!r}'.format(value))
+        return value
 
 
 def main(args=None):
@@ -45,11 +60,11 @@ def main(args=None):
         description='Create a virtual environment with venv or virtualenv.',
     )
     parser.add_argument(
-        'env_dir', type=ensure_directory,
+        'env_dir', type=NonExistPath(parser),
         help='Directory to create the virtual environment in.',
     )
     parser.add_argument(
-        '--python', required=True, type=parse_python,
+        '--python', required=True, type=Python(),
         help='Python to use (a version, command, or path to the executable).',
     )
     parser.add_argument(

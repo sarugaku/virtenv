@@ -68,7 +68,8 @@ def main(args=None):
         help='Python to use (a version, command, or path to the executable).',
     )
     parser.add_argument(
-        '--system-site-packages', default=False, action='store_true',
+        '--system-site-packages', dest='system',
+        default=False, action='store_true',
         help='Give the environment access to the system site-packages.',
     )
     parser.add_argument(

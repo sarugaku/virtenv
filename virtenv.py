@@ -50,11 +50,11 @@ else:
 
 def _get_script(module=None):
     if module:
-        script = os.path.abspath(module.__file__)
+        script = os.path.realpath(module.__file__)
     else:
-        script = os.path.abspath(__file__)
-    if script.endswith('.pyc'):
-        script = script[:1]
+        script = os.path.realpath(__file__)
+    if script.endswith('.pyc') and os.path.exists(script[:1]):
+        return os.path.realpath(script[:1])
     return script
 
 

@@ -100,6 +100,9 @@ def _is_venv_usable():
     except ImportError:
         print('venv without ensurepip is unuseful, falling back to virtualenv')
         return False
+    if sys.version_info < (3, 4):
+        print('venv in Python 3.3 is unuseful, falling back to virtualenv')
+        return False
     try:
         sys.real_prefix
     except AttributeError:

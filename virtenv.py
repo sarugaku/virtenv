@@ -108,7 +108,7 @@ def _is_venv_usable():
     except AttributeError:
         print('Using venv')
         return True
-    print('venv breaks when nesting in virtualenv, falling back to virtualenv')
+    print('venv breaks when nested in virtualenv, falling back to virtualenv')
     return False
 
 

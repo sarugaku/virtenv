@@ -58,11 +58,26 @@ def _get_script(module=None):
     return script
 
 
+def _is_always_copy_set():
+    try:
+        return bool(os.environ['VIRTUALENV_ALWAYS_COPY'])
+    except KeyError:
+        return False
+
+
+def _should_use_symlinks():
+    if _is_always_copy_set():
+        return False
+    if os.name == 'nt':     # Copied from venv logic.
+        return False
+    return True
+
+
 def create_venv(env_dir, system_site_packages, prompt):
     builder = _EnvBuilder(
         prompt=prompt,  # Supported by custom builder.
         system_site_packages=system_site_packages,
-        symlinks=(os.name != 'nt'),  # Copied from venv logic.
+        symlinks=_should_use_symlinks(),
         with_pip=True,  # We only enter here for Python 3.4+ so this is fine.
     )
     builder.create(env_dir)
@@ -81,6 +96,8 @@ def create_virtualenv(virtualenv_py, env_dir, system, prompt):
         else:
             virtualenv_py = _get_script(virtualenv)
     cmd = [sys.executable, virtualenv_py, str(env_dir)]
+    if _is_always_copy_set():
+        cmd.extend(['--always-copy'])
     if system:
         cmd.append('--system-site-packages')
     if prompt:

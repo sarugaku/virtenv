@@ -2,7 +2,15 @@ import argparse
 import os
 import sys
 
-from virtenv import VirtualenvNotFound, create
+from virtenv import VirtualenvNotFound, create, get_script
+
+
+def get_virtualenv_py():
+    try:
+        import virtualenv
+    except ImportError:
+        return None
+    return get_script(virtualenv)
 
 
 def is_executable(path):
@@ -78,7 +86,11 @@ def main(args=None):
     )
     opts = parser.parse_args(args)
     try:
-        create(opts.python, opts.env_dir, opts.system, opts.prompt)
+        create(
+            opts.python, opts.env_dir,
+            opts.system, opts.prompt,
+            get_virtualenv_py(),
+        )
     except VirtualenvNotFound:
         print('virtualenv not available')
         sys.exit(1)

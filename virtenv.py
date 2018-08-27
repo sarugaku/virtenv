@@ -48,7 +48,7 @@ else:
                 print()
 
 
-def _get_script(module=None):
+def get_script(module=None):
     if module:
         script = os.path.realpath(module.__file__)
     else:
@@ -79,7 +79,7 @@ def create_virtualenv(virtualenv_py, env_dir, system, prompt):
         except ImportError:
             raise VirtualenvNotFound
         else:
-            virtualenv_py = _get_script(virtualenv)
+            virtualenv_py = get_script(virtualenv)
     cmd = [sys.executable, virtualenv_py, str(env_dir)]
     if system:
         cmd.append('--system-site-packages')
@@ -121,7 +121,7 @@ def _create_with_this(env_dir, system, prompt, virtualenv_py):
 
 def _create_with_python(python, env_dir, system, prompt, virtualenv_py):
     # Delegate everything into a subprocess. Trick learned from virtualenv.
-    cmd = [python, _get_script(), str(env_dir)]
+    cmd = [python, get_script(), str(env_dir)]
     if system:
         cmd.append('--system')
     if prompt:

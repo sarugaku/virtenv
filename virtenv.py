@@ -80,11 +80,14 @@ def create_virtualenv(virtualenv_py, env_dir, system, prompt):
             raise VirtualenvNotFound
         else:
             virtualenv_py = get_script(virtualenv)
-    cmd = [sys.executable, virtualenv_py, str(env_dir)]
+    if not prompt:
+        prompt = os.path.basename(env_dir)
+    cmd = [
+        sys.executable, virtualenv_py, str(env_dir),
+        '--prompt', '({}) '.format(prompt),
+    ]
     if system:
         cmd.append('--system-site-packages')
-    if prompt:
-        cmd.extend(['--prompt', prompt])
     subprocess.check_call(cmd)
 
 

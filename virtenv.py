@@ -35,11 +35,16 @@ else:
         def post_setup(self, context):
             print('Ensuring up-to-date setuptools, pip, and wheel...',
                   end='', flush=True)
+            env = os.environ.copy()
+            env.update({
+                'PIP_DISABLE_PIP_VERSION_CHECK': '1',
+                'PIP_NO_WARN_CONFLICTS': '1',
+            })
             returncode = subprocess.call([
                 context.env_exe, '-m', 'pip', 'install',
-                '--upgrade', '--disable-pip-version-check', '--quiet',
+                '--upgrade', '--quiet',
                 'setuptools', 'pip', 'wheel',
-            ])
+            ], env=env)
             if returncode == 0:
                 print('done')
             else:

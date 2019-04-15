@@ -58,8 +58,8 @@ def get_script(module=None):
         script = os.path.realpath(module.__file__)
     else:
         script = os.path.realpath(__file__)
-    if script.endswith('.pyc') and os.path.exists(script[:1]):
-        return os.path.realpath(script[:1])
+    if script.endswith('.pyc') and os.path.exists(script[:-1]):
+        return os.path.realpath(script[:-1])
     return script
 
 

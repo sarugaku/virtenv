@@ -100,18 +100,20 @@ def _create_virtualenv(virtualenv_py, env_dir, system, prompt, bare):
     subprocess.check_call(cmd)
 
 
-def _is_venv_usable():
+def _is_venv_usable(needs_pip):
     if not venv:
         if sys.version_info >= (3, 3):
             print('venv not available, falling back to virtualenv')
         else:
             print('Using virtualenv')
         return False
-    try:
-        import ensurepip    # noqa
-    except ImportError:
-        print('venv without ensurepip is unuseful, falling back to virtualenv')
-        return False
+    if needs_pip:
+        try:
+            import ensurepip    # noqa
+        except ImportError:
+            print('venv without ensurepip is unuseful, '
+                  'falling back to virtualenv')
+            return False
     if sys.version_info < (3, 4):
         print('venv in Python 3.3 is unuseful, falling back to virtualenv')
         return False
@@ -125,7 +127,7 @@ def _is_venv_usable():
 
 
 def _create_with_this(env_dir, system, prompt, bare, virtualenv_py):
-    if _is_venv_usable():
+    if _is_venv_usable(not bare):
         _create_venv(env_dir, system, prompt, bare)
     else:
         _create_virtualenv(virtualenv_py, env_dir, system, prompt, bare)

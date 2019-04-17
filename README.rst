@@ -38,7 +38,8 @@ Command line API
 
 ::
 
-    virtenv env_dir --python PYTHON [--system] [--prompt PROMPT]
+    virtenv env_dir --python PYTHON
+            [--bare] [--system-site-packages] [--prompt PROMPT]
 
 Meanings of arguments are similar to the Python API.
 

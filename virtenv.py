@@ -33,6 +33,8 @@ else:
             print('New Python executable in', context.env_exe)
 
         def post_setup(self, context):
+            if not self.with_pip:
+                return
             print('Ensuring up-to-date setuptools, pip, and wheel...',
                   end='', flush=True)
             returncode = subprocess.call([
@@ -58,12 +60,12 @@ def get_script(module=None):
     return script
 
 
-def create_venv(env_dir, system_site_packages, prompt):
+def _create_venv(env_dir, system_site_packages, prompt, bare):
     builder = _EnvBuilder(
         prompt=prompt,  # Supported by custom builder.
         system_site_packages=system_site_packages,
         symlinks=(os.name != 'nt'),  # Copied from venv logic.
-        with_pip=True,  # We only enter here for Python 3.4+ so this is fine.
+        with_pip=(not bare),    # OK since we only enter here for Python 3.4+.
     )
     builder.create(env_dir)
 
@@ -72,7 +74,7 @@ class VirtualenvNotFound(EnvironmentError):
     pass
 
 
-def create_virtualenv(virtualenv_py, env_dir, system, prompt):
+def _create_virtualenv(virtualenv_py, env_dir, system, prompt, bare):
     if not virtualenv_py:
         try:
             import virtualenv
@@ -88,6 +90,8 @@ def create_virtualenv(virtualenv_py, env_dir, system, prompt):
     ]
     if system:
         cmd.append('--system-site-packages')
+    if bare:
+        cmd.extend(['--no-pip', '--no-setuptools', '--no-wheel'])
     subprocess.check_call(cmd)
 
 
@@ -115,32 +119,41 @@ def _is_venv_usable():
     return False
 
 
-def _create_with_this(env_dir, system, prompt, virtualenv_py):
+def _create_with_this(env_dir, system, prompt, bare, virtualenv_py):
     if _is_venv_usable():
-        create_venv(env_dir, system, prompt)
+        _create_venv(env_dir, system, prompt, bare)
     else:
-        create_virtualenv(virtualenv_py, env_dir, system, prompt)
+        _create_virtualenv(virtualenv_py, env_dir, system, prompt, bare)
 
 
-def _create_with_python(python, env_dir, system, prompt, virtualenv_py):
+def _create_with_python(python, env_dir, system, prompt, bare, virtualenv_py):
     # Delegate everything into a subprocess. Trick learned from virtualenv.
     cmd = [python, get_script(), str(env_dir)]
     if system:
         cmd.append('--system')
     if prompt:
         cmd.extend(['--prompt', prompt])
+    if bare:
+        cmd.append('--bare')
     if virtualenv_py:
         cmd.extend(['--virtualenv.py', virtualenv_py])
     subprocess.check_call(cmd)
 
 
-def create(python, env_dir, system, prompt, virtualenv_py=None):
+def create(python, env_dir, system, prompt, bare, virtualenv_py=None):
     """Main entry point to use this as a module.
     """
     if not python or python == sys.executable:
-        _create_with_this(env_dir, system, prompt, virtualenv_py)
+        _create_with_this(
+            env_dir=env_dir, system=system, prompt=prompt,
+            bare=bare, virtualenv_py=virtualenv_py,
+        )
     else:
-        _create_with_python(python, env_dir, system, prompt, virtualenv_py)
+        _create_with_python(
+            python=python,
+            env_dir=env_dir, system=system, prompt=prompt,
+            bare=bare, virtualenv_py=virtualenv_py,
+        )
 
 
 def _main(args=None):
@@ -148,12 +161,16 @@ def _main(args=None):
     import argparse
     parser = argparse.ArgumentParser()
     parser.add_argument('env_dir')
+    parser.add_argument('--bare', default=False, action='store_true')
     parser.add_argument('--system', default=False, action='store_true')
     parser.add_argument('--virtualenv.py', dest='script', default=None)
     parser.add_argument('--prompt', default=None)
     opts = parser.parse_args(args)
     try:
-        _create_with_this(opts.env_dir, opts.system, opts.prompt, opts.script)
+        _create_with_this(
+            env_dir=opts.env_dir, system=opts.system, prompt=opts.prompt,
+            bare=opts.bare, virtualenv_py=opts.script,
+        )
     except VirtualenvNotFound:
         print('virtualenv not available')
         sys.exit(1)

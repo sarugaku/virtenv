@@ -14,7 +14,7 @@ Python API
 
 ::
 
-    create(python, env_dir, virtualenv_py, system, prompt)
+    create(python, env_dir, system, prompt, bare, virtualenv_py=None)
 
 * ``python`` should be an absolute path pointing to a Python executable. If
   this is not ``None``, and does not match ``sys.executable``, that interpreter
@@ -25,6 +25,9 @@ Python API
   the created virtual environment.
 * ``prompt`` specifies the prompt prefix used in the created virtual
   environment's activate scripts.
+* ``bare``, if True, prevents any third-party libraries from being installed.
+  This means you will not have Setuptools, pip, and Wheel available inside the
+  created virtual environment.
 * ``virtualenv_py`` should be an absolute path pointing to a ``virtualenv.py``
   script. This is optional; if missing, virtualenv will not be used to create
   a virtual environment.

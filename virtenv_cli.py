@@ -76,6 +76,10 @@ def main(args=None):
         help='Python to use (a version, command, or path to the executable).',
     )
     parser.add_argument(
+        '--bare', default=False, action='store_true',
+        help='Do not install packages into the environment.',
+    )
+    parser.add_argument(
         '--system-site-packages', dest='system',
         default=False, action='store_true',
         help='Give the environment access to the system site-packages.',
@@ -87,9 +91,9 @@ def main(args=None):
     opts = parser.parse_args(args)
     try:
         create(
-            opts.python, opts.env_dir,
-            opts.system, opts.prompt,
-            get_virtualenv_py(),
+            python=opts.python, env_dir=opts.env_dir,
+            system=opts.system, prompt=opts.prompt,
+            bare=opts.bare, virtualenv_py=get_virtualenv_py(),
         )
     except VirtualenvNotFound:
         print('virtualenv not available')
